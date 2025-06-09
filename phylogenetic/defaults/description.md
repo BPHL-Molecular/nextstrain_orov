@@ -28,4 +28,4 @@ We gratefully acknowledge the authors, originating and submitting laboratories o
 ---
 
 **Maintained by**: Arnold Rodriguez, Florida's Bureau of Public Health Laboratories   
-**This analysis is possible thanks to pipeline** [Nextstrain](https://nextstrain.org)
+**This analysis is possible thanks to** [Nextstrain](https://nextstrain.org)
