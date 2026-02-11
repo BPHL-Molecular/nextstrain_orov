@@ -144,8 +144,8 @@ class AssemblyImporter:
             available_segments = strain_data[strain].keys()
             for seg in ['L', 'M', 'S']:
                 accession_col = f'accession_{seg}'
-                has_accession = (accession_col in row and
-                               pd.notna(row[accession_col]) and
+                has_accession = (accession_col in row and 
+                               pd.notna(row[accession_col]) and 
                                str(row[accession_col]).strip() != '')
                 has_segment = seg in available_segments
 
@@ -183,13 +183,13 @@ class AssemblyImporter:
         for seg in ['L', 'M', 'S']:
             has_segment = seg in strain_data_dict
             accession_col = f'accession_{seg}'
-            has_accession = (accession_col in user_row and
-                           pd.notna(user_row[accession_col]) and
+            has_accession = (accession_col in user_row and 
+                           pd.notna(user_row[accession_col]) and 
                            str(user_row[accession_col]).strip() != '')
             if has_segment and has_accession:
                 n_segments += 1
 
-        # Base metadata (auto-populated)
+        # Base metadata
         metadata = {
             'strain': strain,
             'n_segments': n_segments,
@@ -205,7 +205,6 @@ class AssemblyImporter:
         }
 
         # Initialize all segment columns as empty/zero
-        # Use pd.NA for numeric columns to avoid export issues
         for seg in ['L', 'M', 'S']:
             metadata.update({
                 f'accession_{seg}': '',
@@ -380,8 +379,8 @@ class UserSequenceProcessor:
 
         # Process each user sequence
         new_rows = []
-        sequences_to_add = {}  # {segment: [(strain, sequence), ...]}
-
+        sequences_to_add = {}
+        
         for idx, row in user_df.iterrows():
             print(f"Processing {row['strain']} ({row['segment']} segment)...")
 
@@ -470,7 +469,7 @@ class UserSequenceProcessor:
 
         # Check for duplicates
         existing_strains = set(nextstrain_df['strain'].values)
-        duplicate_strains = [row['strain'] for _, row in user_df.iterrows()
+        duplicate_strains = [row['strain'] for _, row in user_df.iterrows() 
                              if row['strain'] in existing_strains]
 
         if duplicate_strains:
@@ -494,19 +493,19 @@ class UserSequenceProcessor:
             strain_sequences = {}
             for segment, qc_row in strain_qc_dict.items():
                 accession_col = f'accession_{segment}'
-                has_accession = (accession_col in user_row and
-                               pd.notna(user_row[accession_col]) and
+                has_accession = (accession_col in user_row and 
+                               pd.notna(user_row[accession_col]) and 
                                str(user_row[accession_col]).strip() != '')
 
                 if has_accession:
                     try:
                         # Get reference for this segment
-                        reference = [k for k, v in importer.REFERENCE_TO_SEGMENT.items()
+                        reference = [k for k, v in importer.REFERENCE_TO_SEGMENT.items() 
                                    if v == segment][0]
 
                         # Read sequence
                         seq, length = importer.read_consensus_sequence(
-                            qc_row['sampleID'],
+                            qc_row['sampleID'], 
                             reference
                         )
                         strain_sequences[segment] = (seq, length)
@@ -526,7 +525,7 @@ class UserSequenceProcessor:
             # Create metadata row
             try:
                 metadata_row = importer.create_nextstrain_metadata_row(
-                    user_row,
+                    user_row, 
                     strain_qc_dict,
                     qc_df[qc_df['strain'] == strain]
                 )
@@ -551,7 +550,7 @@ class UserSequenceProcessor:
 
         # Add to metadata
         try:
-            updated_df = pd.concat([nextstrain_df, pd.DataFrame(new_metadata_rows)],
+            updated_df = pd.concat([nextstrain_df, pd.DataFrame(new_metadata_rows)], 
                                   ignore_index=True)
             updated_df.to_csv(existing_metadata, sep='\t', index=False)
             print(f"✅ Updated metadata with {len(new_metadata_rows)} new strains")
@@ -662,28 +661,28 @@ Examples:
   %(prog)s --template my_samples.csv
   %(prog)s --assembly-dir results/assembly_output --metadata my_samples.csv --dry-run
   %(prog)s --assembly-dir results/assembly_output --metadata my_samples.csv --rebuild
-
+  
   # Manual CSV entry (legacy mode)
   %(prog)s --create-template template.csv
   %(prog)s --input filled_template.csv --validate-only
   %(prog)s --input filled_template.csv --rebuild
         """
     )
-
-    # Mode 1: Assembly import (NEW - recommended)
+    
+    # Mode 1: Assembly import
     assembly_group = parser.add_argument_group('Assembly Pipeline Import (Recommended)')
     assembly_group.add_argument('--template', type=str, metavar='FILE',
                                 help='Create simplified metadata CSV template for assembly import')
-    assembly_group.add_argument('--assembly-dir', type=str,
+    assembly_group.add_argument('--assembly-dir', type=str, 
                                 help='Assembly pipeline output directory')
     assembly_group.add_argument('--metadata', type=str,
                                 help='User metadata CSV (strain,accession_L,accession_M,accession_S,date)')
 
-    # Mode 2: Manual CSV (EXISTING - legacy)
+    # Mode 2: Manual CSV
     manual_group = parser.add_argument_group('Manual CSV Entry (Legacy)')
-    manual_group.add_argument('--input', type=str,
+    manual_group.add_argument('--input', type=str, 
                               help='Input CSV file with manual sequence entries')
-    manual_group.add_argument('--create-template', type=str,
+    manual_group.add_argument('--create-template', type=str, 
                               help='Create CSV template file for manual entry')
 
     # Common options
